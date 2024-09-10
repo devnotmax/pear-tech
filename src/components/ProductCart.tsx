@@ -1,44 +1,9 @@
-// import React from "react";
-// import { Product } from "../app/products/types"; // Asegúrate de ajustar la ruta según tu estructura de archivos
-
-// export interface CartProductCardProps {
-//   product: Product;
-// }
-
-// const CartProductCard: React.FC<CartProductCardProps> = ({ product }) => {
-//   if (!product) {
-//     return null; // Si product no está definido, no renderiza nada
-//   }
-
-//   return (
-//     <li className="border p-4 rounded-lg flex items-center space-x-4">
-//       {typeof product.image === "string" ? (
-//         <img
-//           src={product.image}
-//           alt={product.name}
-//           className="w-16 h-16 object-cover rounded-md"
-//         />
-//       ) : (
-//         <img
-//           src={product.image.url} // Aquí se accede a la propiedad 'url' porque hemos verificado que 'image' es de tipo 'image'
-//           alt={product.name}
-//           className="w-16 h-16 object-cover rounded-md"
-//         />
-//       )}
-//       <div className="flex flex-col space-y-1">
-//         <h2 className="text-sm font-semibold">{product.name}</h2>
-//         <p className="text-md text-green-500">${product.price}</p>
-//       </div>
-//     </li>
-//   );
-// };
-
-// export default CartProductCard;
 import React from "react";
-import { Product } from "../app/products/types"; // Asegúrate de ajustar la ruta según tu estructura de archivos
+import Iproduct from "../interfaces/product";
+import Image from "next/image";
 
 export interface CartProductCardProps {
-  product: Product;
+  product: Iproduct;
 }
 
 const CartProductCard: React.FC<CartProductCardProps> = ({ product }) => {
@@ -49,13 +14,13 @@ const CartProductCard: React.FC<CartProductCardProps> = ({ product }) => {
   return (
     <li className="border p-4 rounded-lg flex items-center space-x-4">
       {typeof product.image === "string" ? (
-        <img
+        <Image
           src={product.image}
           alt={product.name}
           className="w-16 h-16 object-cover rounded-md"
-        />
+        ></Image>
       ) : (
-        <img
+        <Image
           src={product.image.url} // Aquí se accede a la propiedad 'url' porque hemos verificado que 'image' es de tipo 'image'
           alt={product.name}
           className="w-16 h-16 object-cover rounded-md"

@@ -3,17 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import UserWidget from "./UserWidget";
 
-
-
 interface NavBarProps {
   links: { name: string; href: string }[];
 }
 
 const Navbar: React.FC<NavBarProps> = ({ links }) => {
-
-  
-
-
   return (
     <>
       <div className="bg-stone-50 text-black font-bold text-base h-15 p-2 flex space-x-4 items-center justify-between">
@@ -37,7 +31,7 @@ const Navbar: React.FC<NavBarProps> = ({ links }) => {
         <div className="py-1 mx-1 text-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center font-bold">
-              <p>"Bienvenido a Peartech"</p>
+              <p>&quot;Bienvenido a Peartech&quot;</p>
             </div>
             <div className="flex items-center justify-center gap-2 mx-9">
               <p>

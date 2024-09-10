@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 interface CarrouselProps {
   images: string[];
@@ -21,24 +22,24 @@ const Carrousel: React.FC<CarrouselProps> = ({ images }) => {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto"> 
-      <div className="relative overflow-hidden" style={{ height: "auto" }}> 
-        <img
+    <div className="max-w-[1600px] mx-auto">
+      <div className="relative overflow-hidden" style={{ height: "auto" }}>
+        <Image
           src={images[currentIndex]}
           alt={`Slide ${currentIndex}`}
           className="w-full h-full rounded-md"
-        />
+        ></Image>
         <button
           className="absolute top-1/2 left-2 sm:left-4 transform -translate-y-1/2 bg-white/30 hover:bg-white/60 text-black p-3 sm:p-4 rounded-full"
           onClick={prevSlide}
         >
-          <i className="bx bx-chevron-left text-2xl sm:text-3xl"></i> 
+          <i className="bx bx-chevron-left text-2xl sm:text-3xl"></i>
         </button>
         <button
           className="absolute top-1/2 right-2 sm:right-4 transform -translate-y-1/2 bg-white/30 hover:bg-white/60 text-black p-3 sm:p-4 rounded-full"
           onClick={nextSlide}
         >
-          <i className="bx bx-chevron-right text-2xl sm:text-3xl"></i> 
+          <i className="bx bx-chevron-right text-2xl sm:text-3xl"></i>
         </button>
       </div>
       <div className="flex justify-center mt-4 space-x-3">
