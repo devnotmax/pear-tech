@@ -10,6 +10,11 @@ import { useRouter } from "next/navigation";
 
 export const Cart: React.FC = () => {
   const { user } = useContext(AuthContext);
+  const [cart, setCart] = useState(
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("cart") || "[]")
+      : []
+  );
   const router = useRouter();
 
   if (!user?.login) {
@@ -22,9 +27,6 @@ export const Cart: React.FC = () => {
       </div>
     );
   }
-  const [cart, setCart] = useState(
-    JSON.parse(localStorage.getItem("cart") || "[]")
-  );
 
   const handleOrder = () => {
     const url =
