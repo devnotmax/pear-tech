@@ -6,7 +6,7 @@ import Link from "next/link";
 //COMPONENTS
 import RegisterForm from "@/components/RegisterForm";
 
-export const Register: React.FC = () => {
+const Register: React.FC = () => {
   return (
     <main className="w-full min-h-screen p-4 sm:p-8">
       <section className="bg-custom-gradient min-h-full p-16 rounded-[12px] flex justify-center items-center">
