@@ -5,7 +5,6 @@ import CartProductCard from "@/components/ProductCart";
 import IProduct from "@/interfaces/product";
 import { AuthContext } from "@/contexts/authContext";
 import Link from "next/link";
-import { json } from "stream/consumers";
 import { useRouter } from "next/navigation";
 
 export const Cart: React.FC = () => {
