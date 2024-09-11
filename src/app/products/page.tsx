@@ -3,7 +3,7 @@ import ProductCard from "../../components/ProductCard";
 import { IProduct } from "../../interfaces/product";
 import { getProductService } from "@/services/getProductService";
 
-export const ProductsCards: React.FC = async () => {
+const ProductsCards: React.FC = async () => {
 
   const url = process.env.API_URL + "/products";
   const products = await getProductService(url);
