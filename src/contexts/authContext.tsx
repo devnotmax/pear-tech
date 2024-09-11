@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Guardar el usuario en localStorage cada vez que se actualiza el estado
   useEffect(() => {
-    if (typeof window !== "undefined" && user) {
+    if (user) {
       localStorage.setItem("user", JSON.stringify(user));
     }
   }, [user]);
