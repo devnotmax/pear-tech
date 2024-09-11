@@ -1,8 +1,7 @@
-"use client";
+"use client"; // Mantén esta línea ya que indica que este componente debe ejecutarse en el cliente
 
 import { IuserSession } from "@/interfaces/forms";
 import { useEffect, useState, createContext } from "react";
-
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -25,8 +24,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Guardar el usuario en localStorage cada vez que se actualiza el estado
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
+    if (typeof window !== "undefined") {
+      // Asegurarse de que está en el cliente
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
     }
   }, [user]);
 
@@ -34,13 +36,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const localUser = localStorage.getItem("user");
-      setUser(JSON.parse(localUser!)?.user);
+      if (localUser) {
+        setUser(JSON.parse(localUser)?.user);
+      }
     }
   }, []);
 
   // Función para cerrar sesión
   const logout = () => {
     if (typeof window !== "undefined") {
+      // Solo en el cliente
       localStorage.removeItem("user");
     }
     setUser(null);
