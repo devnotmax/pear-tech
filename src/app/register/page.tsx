@@ -1,3 +1,5 @@
+"use client";
+
 //UTILS
 import Link from "next/link";
 

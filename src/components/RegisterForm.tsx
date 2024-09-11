@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 //UTILS VALIDATORS
 import { validateName } from "../utils/validateName";
@@ -57,7 +57,13 @@ export const RegisterForm = () => {
     address: "",
   });
 
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    // Verificamos si estamos en el cliente
+    setIsClient(typeof window !== "undefined");
+  }, []);
 
   const [formErrors, setFormErrors] = useState({
     name: null as string | null,
