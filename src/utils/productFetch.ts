@@ -7,6 +7,9 @@ export const FetchProducts = async () => {
     const res = await fetch(`${apiURL}/products`, {
       method: "GET",
       next: { revalidate: 3600 }, //opcion de revalidacion
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     const products: IProduct[] = await res.json();
     return products;
