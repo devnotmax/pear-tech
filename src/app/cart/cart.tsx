@@ -1,59 +1,43 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import CartProductCard from "@/components/ProductCart";
 import IProduct from "@/interfaces/product";
-import { AuthContext } from "@/contexts/authContext";
+import { AuthContext, useAuth } from "@/contexts/authContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Pathroutes } from "@/utils/PathRoutes";
+import { createOrder } from "@/utils/orders";
 
 export const Cart: React.FC = () => {
-  const { user } = useContext(AuthContext);
-  const [cart, setCart] = useState(
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("cart") || "[]")
-      : []
-  );
+  const [cart, setCart] = useState<IProduct[]>([]);
+  const [total, setTotal] = useState<number>(0); // Precio total
+  const { dataUser } = useAuth();
   const router = useRouter();
 
-  if (!user?.login) {
-    return (
-      <div className="flex flex-col gap-4 justify-center items-center h-screen">
-        <p>Debes iniciar sesion para ver tu carrito</p>
-        <button className="bg-black hover:bg-green-600 hover:text-black text-white px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
-          <Link href="/login">Iniciar Sesion</Link>
-        </button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (storedCart) {
+      let totalCart = 0;
+      storedCart.forEach((product: IProduct) => {
+        totalCart += product.price;
+      });
+      setTotal(totalCart);
+      setCart(storedCart);
+    }
+  }, []);
 
-  const handleOrder = () => {
-    const url =
-      process.env.NEXT_PUBLIC_API_URL + "/orders" ||
-      "http://localhost:3001/orders";
-    const req = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: user?.token,
-      },
-      body: JSON.stringify({
-        userId: user?.user.userId,
-        products: cart.map((product: IProduct) => product.id),
-      }),
-    };
-    fetch(url, req)
-      .then((res) => res.json())
-      .then((json) => {
-        console.log(json);
-        localStorage.setItem("cart", JSON.stringify([]));
-        setCart([]);
-        alert("Success!");
-        router.refresh();
-      })
-      .catch((err) => console.log(err));
+  const handleCheckOut = async () => {
+    const idProducts = cart.map((product) => product.id);
+    try {
+      await createOrder(idProducts, dataUser?.token!); // Petición al backend
+
+      setCart([]);
+      setTotal(0);
+      localStorage.removeItem("cart");
+      router.push(Pathroutes.DASHBOARD);
+    } catch (error) {}
   };
-
   return (
     <main className="container flex-1 p-8 h-auto mb-4">
       <h1 className="text-3xl font-bold mb-1">Mi carrito</h1>
@@ -71,13 +55,14 @@ export const Cart: React.FC = () => {
                 Total products: {cart.length}
               </span>
               <span className="text-lg font-semibold">{cart.length}</span>
+              <span>Total: ${total}</span>
             </div>
             <div className="flex justify-center mt-4 space-x-4">
               <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                 Descartar Carrito <i className="bx bxs-cart text-xl"></i>
               </button>
               <button
-                onClick={handleOrder}
+                onClick={handleCheckOut}
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               >
                 Finalizar orden <i className="bx bx-check-square"></i>

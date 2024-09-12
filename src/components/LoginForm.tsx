@@ -2,24 +2,25 @@
 
 // UTILS
 import Link from "next/link";
-import React, { useContext, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { ILogin, ILoginError } from "@/interfaces/Iauth";
 
 // UTILS VALIDATORS
-import { validateEmail } from "../utils/validateEmail";
-import { validatePassword } from "../utils/validatePassword";
-import { loginService } from "@/services/authService";
+import { validateLoginForm } from "@/utils/validationLogin";
+import { LoginUser } from "@/services/authService";
 import { useRouter } from "next/navigation";
+import { Pathroutes } from "@/utils/PathRoutes";
 
 // CONTEXT
-import { AuthContext } from "@/contexts/authContext";
+import { useAuth } from "@/contexts/authContext";
 
 interface InputFieldProps {
   type: string;
   placeholder: string;
   id: string;
+  name: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  error: string | null;
 }
 
 // Componente reutilizable para campos de entrada
@@ -27,84 +28,73 @@ const InputField: React.FC<InputFieldProps> = ({
   type,
   placeholder,
   id,
+  name,
   value,
   onChange,
-  error,
 }) => {
   return (
-    <div>
+    <div className="flex flex-col">
       <input
         type={type}
         placeholder={placeholder}
         id={id}
+        name={name}
+        required
         value={value}
         onChange={onChange}
-        className={`w-full h-[50px] p-2 border rounded-lg focus:outline-none ${
-          error
-            ? "border-red-500 focus:ring-2 focus:ring-red-500"
-            : "border-gray-300 focus:ring-2 focus:ring-green-500"
-        }`}
+        className="w-full pl-10 pr-4 py-2 rounded-full text-black bg-gray-50 focus:bg-white focus:outline-none"
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 };
 
-export const LoginForm = () => {
-  const {setUser} = useContext(AuthContext);
-  const [formData, setFormData] = useState({
+const LoginForm = () => {
+  const router = useRouter();
+  const { setDataUser } = useAuth();
+
+  const [userData, setUserData] = useState<ILogin>({
     email: "",
     password: "",
   });
-  
-  const router = useRouter();
-  const [formErrors, setFormErrors] = useState({
-    email: null as string | null,
-    password: null as string | null,
+
+  const [errorUser, setErrorUser] = useState<ILoginError>({
+    email: "",
+    password: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-    
-    if (id === "email") {
-      setFormErrors((prevErrors) => ({
-        ...prevErrors,
-        email: validateEmail(value),
-      }));
-    } else if (id === "password") {
-      setFormErrors((prevErrors) => ({
-        ...prevErrors,
-        password: validatePassword(value),
-      }));
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+
+  // Gestiona el cambio en los inputs
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserData({
+      ...userData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Maneja el envío del formulario
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await LoginUser(userData);
+      setDataUser(res);
+      document.cookie = `userSession=${JSON.stringify(res)}; path=/`;
+
+      router.push(Pathroutes.DASHBOARD);
+    } catch (error: any) {
+      console.log(error); // Asegúrate de mostrar el error para depuración
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const emailValidationError = validateEmail(formData.email);
-    const passwordValidationError = validatePassword(formData.password);
+  // Validación de formulario y manejo de errores
+  useEffect(() => {
+    const errors = validateLoginForm(userData);
+    setErrorUser(errors);
+  }, [userData]);
 
-    setFormErrors({
-      email: emailValidationError,
-      password: passwordValidationError,
-    });
-
-    if (!emailValidationError && !passwordValidationError) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const response = await loginService(apiUrl + "/users/login", formData);
-      if (response.login) {
-        alert("Login exitoso");
-        setUser(response)
-        router.back();
-      }
-    } else {
-      console.log("Errores en el formulario");
-    }
+  // Función para alternar la visibilidad de la contraseña
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -120,23 +110,40 @@ export const LoginForm = () => {
           type="email"
           placeholder="Email"
           id="email"
-          value={formData.email}
+          name="email"
+          value={userData.email}
           onChange={handleChange}
-          error={formErrors.email} // Mostrar error de email
         />
+        {errorUser.email && (
+          <p className="text-sm text-red-500 mt-1">
+            {errorUser.email}
+          </p>
+        )}
       </div>
       <div className="flex flex-col">
         <label htmlFor="password" className="text-sm lg:text-base">
           Contraseña
         </label>
         <InputField
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           id="password"
-          value={formData.password}
+          name="password"
+          value={userData.password}
           onChange={handleChange}
-          error={formErrors.password} // Mostrar error de contraseña
         />
+        {errorUser.password && (
+          <p className="text-sm text-red-500 mt-1">
+            {errorUser.password}
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="text-sm text-blue-500 mt-2"
+        >
+          {showPassword ? "Ocultar" : "Mostrar"} Contraseña
+        </button>
       </div>
       <button
         type="submit"

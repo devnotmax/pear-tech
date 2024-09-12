@@ -28,6 +28,8 @@ const Carrousel: React.FC<CarrouselProps> = ({ images }) => {
           src={images[currentIndex]}
           alt={`Slide ${currentIndex}`}
           className="w-full h-full rounded-md"
+          width={1600}
+          height={900}
         ></Image>
         <button
           className="absolute top-1/2 left-2 sm:left-4 transform -translate-y-1/2 bg-white/30 hover:bg-white/60 text-black p-3 sm:p-4 rounded-full"

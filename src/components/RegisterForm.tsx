@@ -1,23 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 //UTILS VALIDATORS
-import { validateName } from "../utils/validateName";
-import { validateEmail } from "../utils/validateEmail";
-import { validatePassword } from "../utils/validatePassword";
-import { validatePhone } from "../utils/validatePhone";
-import { validateAddress } from "../utils/validateAddress";
-import { registerService } from "@/services/authService";
+import { validateRegisterForm } from "@/utils/validationRegister";
+import { Pathroutes } from "@/utils/PathRoutes";
 import { useRouter } from "next/navigation";
+import { RegisterUser } from "@/services/authService";
+import { IRegister, IRegisterError } from "@/interfaces/Iauth";
 
 interface InputFieldProps {
   type: string;
   placeholder: string;
   id: string;
+  name: string; // Atributo name añadido
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  error: string | null;
 }
 
 // Componente reutilizable para campos de entrada
@@ -25,9 +23,9 @@ const InputField: React.FC<InputFieldProps> = ({
   type,
   placeholder,
   id,
+  name, // Atributo name añadido
   value,
   onChange,
-  error,
 }) => {
   return (
     <div>
@@ -35,117 +33,55 @@ const InputField: React.FC<InputFieldProps> = ({
         type={type}
         placeholder={placeholder}
         id={id}
+        name={name} // Atributo name añadido
         value={value}
         onChange={onChange}
-        className={`w-full h-[50px] p-2 border rounded-lg focus:outline-none ${
-          error
-            ? "border-red-500 focus:ring-2 focus:ring-red-500"
-            : "border-gray-300 focus:ring-2 focus:ring-green-500"
-        }`}
+        className={`w-full h-[50px] p-2 border rounded-lg focus:outline-none`}
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 };
 
 export const RegisterForm = () => {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+
+  const [userData, setUserData] = useState<IRegister>({
     name: "",
     email: "",
     password: "",
-    phone: "",
     address: "",
+    phone: "",
   });
 
-  const [isClient, setIsClient] = useState(false);
-  const router = useRouter();
+  const [errorUser, setErrorUser] = useState<IRegisterError>({
+    name: "",
+    email: "",
+    password: "",
+    address: "",
+    phone: "",
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserData({
+      ...userData,
+      [e.target.name]: e.target.value, // Atributo name utilizado para actualizar el estado
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await RegisterUser(userData);
+      router.push(Pathroutes.LOGIN);
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    // Verificamos si estamos en el cliente
-    setIsClient(typeof window !== "undefined");
-  }, []);
-
-  const [formErrors, setFormErrors] = useState({
-    name: null as string | null,
-    email: null as string | null,
-    password: null as string | null,
-    phone: null as string | null,
-    address: null as string | null,
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-
-    switch (id) {
-      case "name":
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          name: validateName(value),
-        }));
-        break;
-      case "email":
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          email: validateEmail(value),
-        }));
-        break;
-      case "password":
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          password: validatePassword(value),
-        }));
-        break;
-      case "phone":
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          phone: validatePhone(value),
-        }));
-        break;
-      case "address":
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          address: validateAddress(value),
-        }));
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const nameValid = !validateName(formData.name);
-    const emailValid = !validateEmail(formData.email);
-    const passwordValid = !validatePassword(formData.password);
-    const phoneValid = !validatePhone(formData.phone);
-    const addressValid = !validateAddress(formData.address);
-
-    if (
-      nameValid &&
-      emailValid &&
-      passwordValid &&
-      phoneValid &&
-      addressValid
-    ) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const response = await registerService(
-        apiUrl + "/users/register",
-        formData
-      );
-      if (!response.message) {
-        alert("Ya estás registrado, Bienvenido!!");
-        router.back();
-      }
-    } else {
-      console.log("Hay errores en el formulario");
-    }
-  };
+    const errors = validateRegisterForm(userData);
+    setErrorUser(errors);
+  }, [userData]);
 
   return (
     <form
@@ -160,10 +96,11 @@ export const RegisterForm = () => {
           type="email"
           placeholder="Email"
           id="email"
-          value={formData.email}
+          name="email" // Atributo name añadido
+          value={userData.email}
           onChange={handleChange}
-          error={formErrors.email}
         />
+        {errorUser.email && <p className="text-red-500">{errorUser.email}</p>}
       </div>
       <div className="flex flex-col">
         <label htmlFor="password" className="text-sm lg:text-base">
@@ -173,10 +110,13 @@ export const RegisterForm = () => {
           type="password"
           placeholder="Password"
           id="password"
-          value={formData.password}
+          name="password" // Atributo name añadido
+          value={userData.password}
           onChange={handleChange}
-          error={formErrors.password}
         />
+        {errorUser.password && (
+          <p className="text-red-500">{errorUser.password}</p>
+        )}
       </div>
       <div className="flex flex-col">
         <label htmlFor="name" className="text-sm lg:text-base">
@@ -185,11 +125,12 @@ export const RegisterForm = () => {
         <InputField
           type="text"
           id="name"
-          value={formData.name}
+          name="name" // Atributo name añadido
+          value={userData.name}
           placeholder="Nombre"
           onChange={handleChange}
-          error={formErrors.name}
         />
+        {errorUser.name && <p className="text-red-500">{errorUser.name}</p>}
       </div>
       <div className="flex flex-col">
         <label htmlFor="address" className="text-sm lg:text-base">
@@ -199,10 +140,13 @@ export const RegisterForm = () => {
           type="text"
           placeholder="Dirección"
           id="address"
-          value={formData.address}
+          name="address" // Atributo name añadido
+          value={userData.address}
           onChange={handleChange}
-          error={formErrors.address}
         />
+        {errorUser.address && (
+          <p className="text-red-500">{errorUser.address}</p>
+        )}
       </div>
       <div className="flex flex-col">
         <label htmlFor="phone" className="text-sm lg:text-base">
@@ -212,10 +156,11 @@ export const RegisterForm = () => {
           type="number"
           placeholder="Teléfono"
           id="phone"
-          value={formData.phone}
+          name="phone" // Atributo name añadido
+          value={userData.phone}
           onChange={handleChange}
-          error={formErrors.phone}
         />
+        {errorUser.phone && <p className="text-red-500">{errorUser.phone}</p>}
       </div>
       <button
         type="submit"

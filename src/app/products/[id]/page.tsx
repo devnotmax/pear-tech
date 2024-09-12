@@ -17,11 +17,11 @@ const page = async ({ params }: { params: { id: string } }) => {
       <div className="p-10">
         <div className="container grid grid-cols-5 grid-rows-5 gap-4">
           <div className="col-span-2 row-span-4 p-8 bg-gray-200 flex justify-center items-center rounded-xl">
-            <Image
-              src={product.image}
+            <img
+              src={product?.image as string}
               alt={product.name}
               className="rounded-xl"
-            ></Image>
+            ></img>
           </div>
           <div className="col-span-3 row-span-5 col-start-3 p-8 bg-gray-200 rounded-xl shadow-lg flex flex-col justify-center space-y-4">
             <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>

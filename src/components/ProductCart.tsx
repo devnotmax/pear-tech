@@ -14,13 +14,14 @@ const CartProductCard: React.FC<CartProductCardProps> = ({ product }) => {
   return (
     <li className="border p-4 rounded-lg flex items-center space-x-4">
       {typeof product.image === "string" ? (
-        <Image
+        <img
           src={product.image}
           alt={product.name}
           className="w-16 h-16 object-cover rounded-md"
-        ></Image>
+        >
+        </img>
       ) : (
-        <Image
+        <img
           src={product.image.url} // Aquí se accede a la propiedad 'url' porque hemos verificado que 'image' es de tipo 'image'
           alt={product.name}
           className="w-16 h-16 object-cover rounded-md"

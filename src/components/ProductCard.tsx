@@ -23,6 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             }
             alt={product.name}
             className="w-full h-auto"
+            
           />
           <div className="p-4 w-full text-center">
             <h1 className="text-lg font-semibold text-gray-800 truncate">

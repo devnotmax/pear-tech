@@ -1,62 +1,59 @@
 "use client";
 
 import { AuthContext } from "@/contexts/authContext";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 
 const UserWidget = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { dataUser, logout } = useContext(AuthContext);
+  const [cart, setCart] = useState<any[]>([]);
 
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Acceder a localStorage solo en el cliente
+      const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCart(storedCart);
+    }
+  }, []);
 
-  if (user?.login) {
-    return (
-      <div className="flex items-center gap-4">
-        <ul className="flex space-x-2">
-          <li>
-            <button className=" hover:bg-green-600 text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
-              <Link href="/dashboard">
-                <i className="bx bx-user"></i>
-              </Link>
+  return (
+    <div className="flex items-center space-x-4">
+      {dataUser?.login ? (
+        <>
+          <Link href="/dashboard">
+            <button className="hover:bg-green-600 text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
+              <i className="bx bx-user"></i>
             </button>
-          </li>
-          <li>
-            <button
-              onClick={logout}
-              className=" hover:bg-green-600  text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300"
-            >
-              <i className="bx bx-log-out"></i>
+          </Link>
+          <button
+            onClick={logout}
+            className="hover:bg-green-600 text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300"
+          >
+            <i className="bx bx-log-out"></i>
+          </button>
+          <Link href="/cart">
+            <button className="hover:bg-green-600 flex items-center text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
+              <i className="bx bx-cart"></i>
+              <span className="ml-2">{cart.length}</span>
             </button>
-          </li>
-          <li>
-            <Link href="/cart">
-              <button className=" hover:bg-green-600 flex justify-center items-center text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
-                <i className="bx bx-cart"></i>
-                <span className="ml-2">{cart.length}</span>
-              </button>
-            </Link>
-          </li>
-        </ul>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <ul className="flex space-x-2">
-          <li>
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link href="/login">
             <button className="bg-black hover:bg-green-600 hover:text-black text-white px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
-              <Link href="/login">Login</Link>
+              Login
             </button>
-          </li>
-          <li>
+          </Link>
+          <Link href="/register">
             <button className="bg-black hover:bg-green-600 hover:text-black text-white px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
-              <Link href="/register">Register</Link>
+              Register
             </button>
-          </li>
-        </ul>
-      </div>
-    );
-  }
+          </Link>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default UserWidget;

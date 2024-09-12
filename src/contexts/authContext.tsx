@@ -1,59 +1,59 @@
-"use client"; // Mantén esta línea ya que indica que este componente debe ejecutarse en el cliente
-
+"use client";
 import { IuserSession } from "@/interfaces/forms";
-import { useEffect, useState, createContext } from "react";
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
+import { createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextProps {
-  user: IuserSession | null;
-  setUser: (user: IuserSession | null) => void;
-  logout: () => void;
+    dataUser: IuserSession | null;
+    setDataUser: (dataUser: IuserSession | null) => void;
+    logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  setUser: () => {},
-  logout: () => {},
+const AuthContext = createContext<AuthContextProps>({
+    dataUser: null,
+    setDataUser: () => {},
+    logout: () => {},
 });
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<IuserSession | null>(null);
+interface AuthProviderProps {
+    children: React.ReactElement;
+}
 
-  // Guardar el usuario en localStorage cada vez que se actualiza el estado
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Asegurarse de que está en el cliente
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-      }
-    }
-  }, [user]);
+// Proveedor del contexto
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+    const [dataUser, setDataUser] = useState<IuserSession | null>(null);
 
-  // Recuperar el usuario desde localStorage al cargar la página
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const localUser = localStorage.getItem("user");
-      if (localUser) {
-        setUser(JSON.parse(localUser)?.user);
-      }
-    }
-  }, []);
+    // Guarda en la localStorage cuando cambia dataUser
+    useEffect(() => {
+        if (dataUser) {
+            localStorage.setItem("userSession", JSON.stringify(dataUser));
+        }
+    }, [dataUser]);
 
-  // Función para cerrar sesión
-  const logout = () => {
-    if (typeof window !== "undefined") {
-      // Solo en el cliente
-      localStorage.removeItem("user");
-    }
-    setUser(null);
-  };
+    // Recupera la sesión de localStorage al montarse el componente
+    useEffect(() => {
+        if (typeof window !== "undefined" && window.localStorage) {
+            const data = localStorage.getItem("userSession");
+            if (data) {
+                setDataUser(JSON.parse(data));
+            }
+        }
+    }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    // Función de logout
+    const logout = () => {
+        setDataUser(null); // Limpia el estado de usuario
+        localStorage.removeItem("userSession"); // Elimina la sesión de localStorage
+    };
+
+    return (
+        <AuthContext.Provider value={{ dataUser, setDataUser, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
+
+// Exporta el contexto
+export { AuthContext };
+
+// Hook para usar el contexto
+export const useAuth = () => useContext(AuthContext);

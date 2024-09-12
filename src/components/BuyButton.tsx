@@ -1,36 +1,41 @@
 "use client";
 
-import { AuthContext } from "@/contexts/authContext";
+import { useAuth } from "@/contexts/authContext";
 import IProduct from "@/interfaces/product";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
+import { Pathroutes } from "@/utils/PathRoutes";
 
 interface BuyButtonProps {
   product: IProduct;
 }
 const BuyButton = ({ product }: BuyButtonProps) => {
-  //usamos el contexto
-  const { user } = useContext(AuthContext);
-  //El router me permite redirigir a alguien si no esta logueado en este caso
   const router = useRouter();
-  const handleBuy = () => {
-    //Si no esta logueado no va a poder agregar al carrito
-    if (!user?.login) {
-      router.push("/login");
+  const { dataUser } = useAuth();
+
+  const handleAddToCart = () => {
+    if (!dataUser?.token) {
+      alert("You must be logged in to add to cart");
+      router.push(Pathroutes.LOGIN);
     } else {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      if (!cart.some((p: IProduct) => p.id === product?.id)) {
+      const productExist = cart.some(
+        (item: IProduct) => item.id === product.id
+      );
+
+      if (productExist) {
+        alert("Product already in cart");
+        router.refresh();
+      } else {
         cart.push(product);
         localStorage.setItem("cart", JSON.stringify(cart));
-        alert(`Se agrego ${product?.name} al carrito`);
-      } else{
-        alert(`El producto ${product?.name} ya se encuentra en el carrito`)
+        alert("Product added to cart");
+        router.push(Pathroutes.CART);
       }
     }
-    router.refresh();
   };
 
-  return <button onClick={handleBuy}>Comprar</button>;
+  return <button onClick={handleAddToCart}>Comprar</button>;
 };
 
 export default BuyButton;

@@ -1,25 +1,43 @@
-import { ILoginForm, IRegisterForm } from "@/interfaces/forms";
+import { ILogin, IRegister } from "@/interfaces/Iauth";
 
-export const loginService = async (url: string, data:ILoginForm) => {
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-  const json = await response.json();
-  return json;
-};
+const apiURL = process.env.NEXT_PUBLIC_API_URL
 
-export const registerService = async (url:string, data: IRegisterForm) => {
-    const response = await fetch(url, {
-        headers: {
-            "content-type": "application/json",
+export const RegisterUser = async (userData: IRegister) => {
+    try {
+        const res = await fetch(`${apiURL}/users/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData), 
+        })
+        if(res.ok){
+            return res.json()
+        }else {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "User creation error");
         }
-        ,method: "POST",
-        body: JSON.stringify(data)
-    })
-    const json = await response.json();
-    return json;
+    } catch (error: any) {
+        throw new Error(error.message || error);
+    }
+}
+
+export const LoginUser = async (userData: ILogin) => {
+    try {
+        const res = await fetch(`${apiURL}/users/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData), 
+        })
+        if(res.ok){
+            return res.json()
+        }else {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Error logging in");
+        }
+    } catch (error: any) {
+        throw new Error(error.message || error);
+    }
 }
