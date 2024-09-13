@@ -7,7 +7,6 @@ export const Hero = () => {
   return (
     <div className="hero mx-auto w-full">
       <Carrousel images={images} />
-      <CategoryBar />
     </div>
   );
 };

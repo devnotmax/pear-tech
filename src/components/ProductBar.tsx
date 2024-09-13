@@ -2,8 +2,10 @@ import { getProductService } from "@/services/getProductService";
 import ProductCard from "./ProductCard";
 import { products } from "@/mocks/products";
 import IProduct from "@/interfaces/product";
+import Link from "next/link";
+import { IoIosArrowDown } from "react-icons/io";
 
-export const ProductBar = async() => {
+export const ProductBar = async () => {
   const url = `${process.env.API_URL}/products`;
   const products = await getProductService(url);
   const displayedProducts = products.slice(0, 5);
@@ -14,6 +16,14 @@ export const ProductBar = async() => {
         {displayedProducts.map((product: IProduct) => (
           <ProductCard key={product.id} product={product} />
         ))}
+      </div>
+      <div className="text-center mt-4">
+        <button className="bg-black text-white font-medium py-2 px-4 rounded-2xl hover:scale-105 hover:text-[#2BA84A]">
+          <Link href="/products" className="flex items-center gap-2">
+            <p>Ver más</p>
+            <IoIosArrowDown size={20} />
+          </Link>
+        </button>
       </div>
     </div>
   );

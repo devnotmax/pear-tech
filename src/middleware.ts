@@ -6,9 +6,7 @@ export function middleware(request: NextRequest) {
 
   const isAuthRoute = ['/login', '/register'].includes(request.nextUrl.pathname);
 
-  if (userSession && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
+  
 
   if (!userSession && !isAuthRoute) {
     const response = NextResponse.redirect(new URL('/login', request.url));

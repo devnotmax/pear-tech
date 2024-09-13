@@ -3,15 +3,15 @@
 import { useAuth } from "@/contexts/authContext";
 import IProduct from "@/interfaces/product";
 import { useRouter } from "next/navigation";
-import { useContext } from "react";
 import { Pathroutes } from "@/utils/PathRoutes";
 
 interface BuyButtonProps {
   product: IProduct;
 }
+
 const BuyButton = ({ product }: BuyButtonProps) => {
   const router = useRouter();
-  const { dataUser } = useAuth();
+  const { dataUser, setCart } = useAuth();  // Obtén setCart del contexto
 
   const handleAddToCart = () => {
     if (!dataUser?.token) {
@@ -19,18 +19,19 @@ const BuyButton = ({ product }: BuyButtonProps) => {
       router.push(Pathroutes.LOGIN);
     } else {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const productExist = cart.some(
-        (item: IProduct) => item.id === product.id
-      );
+      const productExist = cart.some((item: IProduct) => item.id === product.id);
 
       if (productExist) {
         alert("Product already in cart");
-        router.refresh();
       } else {
-        cart.push(product);
-        localStorage.setItem("cart", JSON.stringify(cart));
+        const updatedCart = [...cart, product];
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        
+        // Actualiza el carrito en el contexto
+        setCart(updatedCart);
+        
         alert("Product added to cart");
-        router.push(Pathroutes.CART);
+        router.refresh(); // Opcional, para refrescar la página si es necesario
       }
     }
   };

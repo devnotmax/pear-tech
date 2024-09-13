@@ -1,20 +1,11 @@
 "use client";
 
-import { AuthContext } from "@/contexts/authContext";
-import React, { useContext, useEffect, useState } from "react";
+import { useAuth } from "@/contexts/authContext";
+import React from "react";
 import Link from "next/link";
 
 const UserWidget = () => {
-  const { dataUser, logout } = useContext(AuthContext);
-  const [cart, setCart] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Acceder a localStorage solo en el cliente
-      const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCart(storedCart);
-    }
-  }, []);
+  const { dataUser, logout, cart } = useAuth(); // Accede a cart desde el contexto
 
   return (
     <div className="flex items-center space-x-4">
@@ -34,7 +25,7 @@ const UserWidget = () => {
           <Link href="/cart">
             <button className="hover:bg-green-600 flex items-center text-black px-4 py-1 border-2 border-green-500 rounded-2xl transition-colors duration-300">
               <i className="bx bx-cart"></i>
-              <span className="ml-2">{cart.length}</span>
+              <span className="ml-2">{cart.length}</span> {/* Muestra el número de ítems */}
             </button>
           </Link>
         </>

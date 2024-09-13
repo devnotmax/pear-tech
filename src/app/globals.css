@@ -19,10 +19,12 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: #f1f5f2;
-  display: flex;
-  flex-direction: column;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
+
+
 
 footer {
   margin-top: auto;
