@@ -28,17 +28,14 @@ const Dashboard = () => {
       </h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-1/2">
         {/* Mis pedidos */}
-        <section className="bg-black p-6 rounded-lg shadow-md text-white">
-          <h2 className="text-2xl font-bold mb-4">Mis pedidos</h2>
+        <section className="bg-white p-6 rounded-lg shadow-md text-black">
+          <h2 className="text-2xl font-bold mb-4">Tus Órdenes</h2>
           <hr />
 
           <div className="mt-5 flex flex-col gap-4">
             {orders &&
               orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="mb-4 p-4 border border-gray-200 rounded-lg"
-                >
+                <div key={order.id} className="mb-4 p-4 ">
                   <CartOrder date={order.date} orders={order.products} />
                 </div>
               ))}
@@ -46,7 +43,7 @@ const Dashboard = () => {
         </section>
 
         {/* Perfil info */}
-        <section className="bg-black p-6 rounded-lg shadow-md text-white">
+        <section className="bg-white p-6 rounded-lg shadow-md text-black">
           <h2 className="text-2xl font-bold mb-4">Mi perfil</h2>
           <hr />
           <ul className="mt-5 bg-white p-6 rounded-lg shadow-md text-black text-center font-medium">
