@@ -6,7 +6,7 @@ import Link from "next/link";
 import { IoIosArrowDown } from "react-icons/io";
 
 export const ProductBar = async () => {
-  const url = `${process.env.API_URL}/products`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/products`;
   const products = await getProductService(url);
   const displayedProducts = products.slice(0, 5);
 
