@@ -11,7 +11,7 @@ interface BuyButtonProps {
 
 const BuyButton = ({ product }: BuyButtonProps) => {
   const router = useRouter();
-  const { dataUser, setCart } = useAuth();  // Obtén setCart del contexto
+  const { dataUser, setCart } = useAuth();
 
   const handleAddToCart = () => {
     if (!dataUser?.token) {
@@ -36,7 +36,14 @@ const BuyButton = ({ product }: BuyButtonProps) => {
     }
   };
 
-  return <button onClick={handleAddToCart}>Comprar</button>;
+  return (
+    <button 
+      onClick={handleAddToCart} 
+      className="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+    >
+      Comprar
+    </button>
+  );
 };
 
 export default BuyButton;

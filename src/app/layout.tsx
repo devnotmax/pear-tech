@@ -40,7 +40,7 @@ export default function RootLayout({
         </head>
         <body className={`${montserrat.className} ${poppins.className}`}>
           <Navbar links={navLinks} />
-          {children}
+          <main>{children}</main>
           <Footer />
         </body>
       </html>
