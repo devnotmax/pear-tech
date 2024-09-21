@@ -1,23 +1,33 @@
-// UTILS
+"use client";
 
 import Link from "next/link";
-
-//COMPONENTES
 import LoginForm from "@/components/LoginForm";
+import { useEffect } from "react";
+import { useAuth } from "@/contexts/authContext";
+import { useRouter } from "next/navigation";
 
 export const Login: React.FC = () => {
+  const { dataUser } = useAuth();
+  const router = useRouter();
+
+  // Redirige si hay un usuario autenticado
+  useEffect(() => {
+    if (dataUser) {
+      router.push("/dashboard"); // Cambia a la ruta que desees
+    }
+  }, [dataUser, router]);
+
   return (
     <main className="w-full min-h-screen p-4 sm:p-8">
       <section className="bg-custom-gradient min-h-full p-8 sm:p-16 rounded-[12px] flex justify-center items-center">
         <div className="w-full lg:w-[80%] h-full lg:h-[80%] rounded-[12px]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 lg:p-8 bg-white w-full h-full min-h-[6\00px] rounded-[12px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 lg:p-8 bg-white w-full h-full min-h-[600px] rounded-[12px]">
             <div className="bg-[#D9D9D9] rounded-[12px] p-4 flex flex-col items-center text-center">
               <h3 className="text-xl lg:text-2xl mt-8 font-bold text-[#2BA84A]">
                 ¡Accede a Tu Cuenta y Compra Fácilmente!
               </h3>
               <p className="font-semibold mt-8">
-                Organiza tus pedidos y disfruta de un proceso de compra sencillo
-                y seguro.
+                Organiza tus pedidos y disfruta de un proceso de compra sencillo y seguro.
               </p>
               <span className="mt-[2rem] lg:mt-[8rem] font-semibold">
                 ¿Todavía no tienes una cuenta?
