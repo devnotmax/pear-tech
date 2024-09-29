@@ -25,7 +25,7 @@ interface InputFieldProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-// Componente reutilizable para campos de entrada
+// Componente reutilizable (no se si funciona bien)
 const InputField: React.FC<InputFieldProps> = ({
   type,
   placeholder,
@@ -66,7 +66,7 @@ const LoginForm = () => {
 
   const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
 
-  // Gestiona el cambio en los inputs
+  // Cambio en los inputs
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUserData({
       ...userData,
@@ -74,20 +74,20 @@ const LoginForm = () => {
     });
   };
 
-  // Maneja el envío del formulario
+  // Envio del form
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const res = await LoginUser(userData);
       setDataUser(res);
       document.cookie = `userSession=${JSON.stringify(res)}; path=/`;
-      if (res && res.user) { // Ajusta esto según tu estructura de respuesta
+      if (res && res.user) { 
         toast.success("Sesión iniciada con éxito");
         router.push(Pathroutes.DASHBOARD);
       }
     } catch (error: any) {
       toast.error(error.message);
-      console.log(error); // Asegúrate de mostrar el error para depuración
+      console.log(error);
     }
   };
 
